@@ -1,23 +1,16 @@
 package com.example.importfromurl
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.IOException
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.MalformedURLException
-import java.net.URL
-import java.util.logging.Level
-import java.util.logging.Logger
+import androidx.appcompat.app.AppCompatActivity
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     private val apiService = APIService()
+    private var title = ""
+    private val KEY_TITLE = "TITLE"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -29,11 +22,21 @@ class MainActivity : AppCompatActivity() {
         button.setOnClickListener {
             thread {
                 val id = editText.text.toString().toIntOrNull() ?: 0
-                val post = apiService.getPostById(id)
+                var post = apiService.getPostById(id)
                 runOnUiThread {
                     textView.text = post?.title
+                    title=post?.title.toString()
                 }
             }
         }
+        if (savedInstanceState != null) {
+
+            title = savedInstanceState.getString(KEY_TITLE, "").toString();
+            textView.text = title;
+        }
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(KEY_TITLE, title)
     }
 }
